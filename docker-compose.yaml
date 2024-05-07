@@ -1,0 +1,29 @@
+version: "3.8"
+services:
+    mongo:
+        image: mongo:latest
+        ports:
+            - "27017:27017"
+        volumes:
+            - ./data/db:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=password
+
+    api:
+        build: ./api
+        ports:
+            - "3000:3000"
+        environment:
+            - NODE_ENV=production
+            - MONGO_URI=mongodb://admin:password@mongo:27017/onmoon?authSource=admin
+
+    frontend:
+        build: ./frontend
+        ports:
+            - "3001:3001"
+        environment:
+            - NODE_ENV=production
+            - VITE_API_URL=http://localhost:3000
+        depends_on:
+            - api
